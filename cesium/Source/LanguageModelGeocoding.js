@@ -40,6 +40,6 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
 };
 
 const viewer = new Cesium.Viewer("cesiumContainer", {
-  geocoder: new LanguageModelGeocoder(),
+  geocoder: new LanguageModelGeocoder({viewModel:{autoComplete:false}}),
 });
 
