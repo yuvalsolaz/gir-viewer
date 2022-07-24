@@ -11,6 +11,7 @@ function LanguageModelGeocoder() {}
  * @param {String} input The query to be sent to the geocoder service
  * @returns {Promise<GeocoderService.Result[]>}
  */
+
 LanguageModelGeocoder.prototype.geocode = function (input) {
   const endpoint = "http://localhost:5000/geocoding"
   const resource = new Cesium.Resource({
@@ -20,6 +21,8 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
       text: input,
     },
   });
+
+  LanguageModelGeocoder.prototype.geocode.autoComplete = false
 
   return resource.fetchJson().then(function (results) {
     let bboxDegrees;
