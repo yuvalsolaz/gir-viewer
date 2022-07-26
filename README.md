@@ -21,6 +21,3 @@ index.html - A simple HTML page based on Cesium's Hello World example. Run a loc
 
 Source - Contains app.js which is referenced from index.html. This is where geocoding app's code goes.
 
-access_token = 
-'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI5YjBhMzM1ZC01YzMzLTQ0NTMtODA5Yi01ZDY2ZWZkZGNlODQiLCJpZCI6MTAxMjI5LCJpYXQiOjE2NTc4MDM4NTN9.sKnMI2rxb5jfdnbO6AupzRKtnjdDhA1Q-NdrYoNx3YM'
-
