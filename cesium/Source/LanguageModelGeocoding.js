@@ -13,7 +13,7 @@ function LanguageModelGeocoder() {}
  */
 
 LanguageModelGeocoder.prototype.geocode = function (input) {
-  const endpoint = "http://localhost:5000/geocoding"
+  const endpoint = "http://172.18.0.1:5000/geocoding"
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
@@ -23,7 +23,7 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
   });
 
   LanguageModelGeocoder.prototype.geocode.autoComplete = false
-
+  
   return resource.fetchJson().then(function (results) {
     let bboxDegrees;
     return results.map(function (resultObject) {
@@ -41,7 +41,8 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
   });
 };
 
-const viewer = new Cesium.Viewer("cesiumContainer", {
-  geocoder: new LanguageModelGeocoder({viewModel:{autoComplete:false}}),
-});
+const viewer = new Cesium.Viewer("cesiumContainer", 
+  {geocoder: new LanguageModelGeocoder()});
 
+
+  
