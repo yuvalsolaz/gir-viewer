@@ -13,7 +13,7 @@ function LanguageModelGeocoder() {}
  */
 
 LanguageModelGeocoder.prototype.geocode = function (input) {
-  const endpoint = "http://172.18.0.1:5000/geocoding"
+  const endpoint = "http://10.53.140.101:5000/geocoding"
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
