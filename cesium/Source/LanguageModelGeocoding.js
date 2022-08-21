@@ -13,7 +13,7 @@ function LanguageModelGeocoder() {}
  */
 
 LanguageModelGeocoder.prototype.geocode = function (input) {
-  const endpoint = "http://192.168.68.147:5000/geocoding"
+  const endpoint = "http://0.0.0.0:5000/geocoding"
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
@@ -32,9 +32,17 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
       rectangle = {coordinates:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.Blue, outlineWidth:4};
       viewer.entities.removeAll();
       viewer.entities.add({rectangle:rectangle});
+      buffer = 0.2 * coordinates.width * (180.0 / 3.14) 
+      buffer_coordinates = Cesium.Rectangle.fromDegrees(
+        bboxDegrees[2]-buffer, 
+        bboxDegrees[0]-buffer, 
+        bboxDegrees[3]+buffer, 
+        bboxDegrees[1]+buffer
+      );
+
       return {
         displayName: resultObject.display_name,
-        destination: coordinates
+        destination: buffer_coordinates
       };
     });
   });
