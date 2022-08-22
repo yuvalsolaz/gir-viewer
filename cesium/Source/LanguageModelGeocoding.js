@@ -27,16 +27,17 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
   return resource.fetchJson().then(function (results) {
     let bboxDegrees;
     return results.map(function (resultObject) {
+      viewer.entities.removeAll();
       bboxDegrees = resultObject.boundingbox;
       coordinates = Cesium.Rectangle.fromDegrees(bboxDegrees[2], bboxDegrees[0], bboxDegrees[3], bboxDegrees[1]);
       rectangle = {coordinates:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.Blue, outlineWidth:4};
-      parent_bbox = resultObject.parent_bbox;
-      parent_coordinates = Cesium.Rectangle.fromDegrees(parent_bbox[2], parent_bbox[0], parent_bbox[3], parent_bbox[1]);
-      parent_rectangle = {coordinates:parent_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.White, outlineWidth:3};
-
-      viewer.entities.removeAll();
       viewer.entities.add({rectangle:rectangle});
-      viewer.entities.add({rectangle:parent_rectangle});
+      for (i =0 ; i < resultObject.levels_bbox.length; i++) {
+        bbox = resultObject.levels_bbox[i];
+        coordinates = Cesium.Rectangle.fromDegrees(bbox[2], bbox[0], bbox[3], bbox[1]);
+        rectangle = {coordinates:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.White, outlineWidth:3};
+        viewer.entities.add({rectangle:rectangle});
+      }
 
       buffer = 0.2 * coordinates.width * (180.0 / 3.14) 
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
