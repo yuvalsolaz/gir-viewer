@@ -27,8 +27,22 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
   return resource.fetchJson().then(function (results) {
     let bboxDegrees;
     return results.map(function (resultObject) {
+      
       viewer.entities.removeAll();
       bboxDegrees = resultObject.boundingbox;
+       
+      confidance = Math.round(resultObject.confidance*100);
+      text = `${resultObject.display_name} (${confidance}%)`;
+      position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
+      viewer.entities.add({position:position,        
+                          label:{text:text, 
+                                 font:"24px Helvetica", 
+                                 fillColor: Cesium.Color.SKYBLUE, 
+                                 outlineColor: Cesium.Color.BLACK, 
+                                 outlineWidth: 2,
+                                 style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
+      });    
+
       coordinates = Cesium.Rectangle.fromDegrees(bboxDegrees[2], bboxDegrees[0], bboxDegrees[3], bboxDegrees[1]);
       rectangle = {coordinates:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
       viewer.entities.add({rectangle:rectangle});
