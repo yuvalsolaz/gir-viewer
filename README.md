@@ -21,3 +21,5 @@ index.html - A simple HTML page based on Cesium's Hello World example. Run a loc
 
 Source - Contains app.js which is referenced from index.html. This is where geocoding app's code goes.
 
+s2 geometry Region Coverer demo:
+https://s2.sidewalklabs.com/regioncoverer/
