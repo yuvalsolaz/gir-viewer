@@ -29,9 +29,9 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
     return results.map(function (resultObject) {
       
       viewer.entities.removeAll();
-      bboxDegrees = resultObject.boundingbox;
        
       confidance = Math.round(resultObject.confidance*100);
+      bboxDegrees = resultObject.boundingbox;
       text = `${resultObject.display_name} (${confidance}%)`;
       position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
       viewer.entities.add({position:position,        
