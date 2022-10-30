@@ -53,6 +53,11 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
         viewer.entities.add({rectangle:_rectangle});
       }
 
+      pcoordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.polygon);
+      polygon = {hierarchy:pcoordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:3};
+      viewer.entities.add({polygon:polygon});
+
+
       buffer = 0.2 * coordinates.width * (180.0 / 3.14) 
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
         bboxDegrees[2]-buffer, 
