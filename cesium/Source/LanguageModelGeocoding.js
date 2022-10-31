@@ -43,22 +43,18 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
                                  style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
       });    
 
-      coordinates = Cesium.Rectangle.fromDegrees(bboxDegrees[2], bboxDegrees[0], bboxDegrees[3], bboxDegrees[1]);
-      rectangle = {coordinates:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
-      viewer.entities.add({rectangle:rectangle});
-      for (i = 1; i < resultObject.levels_bbox.length; i++) {
-        _bbox = resultObject.levels_bbox[i];
-        _coordinates = Cesium.Rectangle.fromDegrees(_bbox[2], _bbox[0], _bbox[3], _bbox[1]);
-        _rectangle = {coordinates:_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.WHITE, outlineWidth:2};
-        viewer.entities.add({rectangle:_rectangle});
+
+      coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[0]);
+      polygon = {hierarchy:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
+      viewer.entities.add({polygon: polygon});      // viewer.entities.add({rectangle:rectangle});
+
+      for (i = 1; i < resultObject.levels_polygons.length; i++) {
+        _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
+        _polygon = {hierarchy:_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:2};
+        viewer.entities.add({polygon:_polygon});
       }
 
-      pcoordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.polygon);
-      polygon = {hierarchy:pcoordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:3};
-      viewer.entities.add({polygon:polygon});
-
-
-      buffer = 0.2 * coordinates.width * (180.0 / 3.14) 
+      buffer = 0.2 * Math.abs(bboxDegrees[2]-bboxDegrees[3]);
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
         bboxDegrees[2]-buffer, 
         bboxDegrees[0]-buffer, 
