@@ -32,7 +32,7 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
        
       confidance = Math.round(resultObject.confidance*100);
       bboxDegrees = resultObject.boundingbox;
-      text = `${resultObject.display_name} (${confidance}%)`;
+      text = `${resultObject.display_name.slice(0,64)} (${confidance}%)`;
       position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
       viewer.entities.add({position:position,        
                           label:{text:text, 
