@@ -27,6 +27,7 @@ function LanguageModelGeocoder() {}
 
 LanguageModelGeocoder.prototype.geocode = function (input) {
   const endpoint = "http://0.0.0.0:5000/geocoding"
+  const confidence_threshold = 20.0; 
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
@@ -43,43 +44,47 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
       
       viewer.entities.removeAll();
       confidences = resultObject.confidence.reverse()
-      confidence = Math.round(confidences[0]*100);
-      bboxDegrees = resultObject.boundingbox;
-      text = `${resultObject.display_name.slice(0,64)} (${confidence}%)`;
-      position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
-      viewer.entities.add({position:position,        
-                          label:{text:text, 
-                                 font:"24px Helvetica", 
-                                 fillColor: Cesium.Color.SKYBLUE, 
-                                 outlineColor: Cesium.Color.BLACK, 
-                                 outlineWidth: 2,
-                                 style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
-      });    
+      // confidence = Math.round(confidences[0]*100);
+      bboxDegrees = resultObject.boundingboxes[0];
+      // text = `${resultObject.display_name.slice(0,64)} (${confidence}%)`;
+      // position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
+      // viewer.entities.add({position:position,        
+      //                     label:{text:text, 
+      //                            font:"24px Helvetica", 
+      //                            fillColor: Cesium.Color.SKYBLUE, 
+      //                            outlineColor: Cesium.Color.BLACK, 
+      //                            outlineWidth: 2,
+      //                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
+      // });    
 
 
-      coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[0]);
-      polygon = {hierarchy:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
-      viewer.entities.add({polygon: polygon});      // viewer.entities.add({rectangle:rectangle});
+      // coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[0]);
+      // polygon = {hierarchy:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
+      // viewer.entities.add({polygon: polygon});      // viewer.entities.add({rectangle:rectangle});
 
-      for (i = 1; i < resultObject.levels_polygons.length; i++) {
-        _confidence = Math.round(confidences[i]*100);
-        _text = `level-${i} (${_confidence}%)`;
-        _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
-        _polygon = {hierarchy:_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:2};
-        viewer.entities.add({polygon:_polygon});
-        _centroid = centroid(resultObject.levels_polygons[i]);
-        _position = Cesium.Cartesian3.fromDegrees(_centroid.x, _centroid.y);
-        viewer.entities.add({position:_position,        
-                            label:{text:_text, 
+      for (i = 0; i < resultObject.levels_polygons.length; i++) {
+        _confidence = Math.round(confidences[i]*100);        
+        if (_confidence >= confidence_threshold) {
+            _text = `${resultObject.display_name.slice(0,64)} ${i} (${_confidence}%)`;
+            _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
+            _polygon = {hierarchy:_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:2};
+            viewer.entities.add({polygon:_polygon});
+            _centroid = centroid(resultObject.levels_polygons[i]);
+            _position = Cesium.Cartesian3.fromDegrees(_centroid.x, _centroid.y);
+            viewer.entities.add({position:_position,        
+                                label:{text:_text, 
                                    font:"24px Helvetica", 
                                    fillColor: Cesium.Color.SKYBLUE, 
                                    outlineColor: Cesium.Color.BLACK, 
                                    outlineWidth: 2,
                                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
-                            });
+                               });
+                               break;
+        }
   
       };
 
+      bboxDegrees = resultObject.boundingboxes[i];
       buffer = 0.2 * Math.abs(bboxDegrees[2]-bboxDegrees[3]);
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
         bboxDegrees[2]-buffer, 
