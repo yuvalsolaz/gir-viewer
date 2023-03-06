@@ -12,6 +12,19 @@ function LanguageModelGeocoder() {}
  * @returns {Promise<GeocoderService.Result[]>}
  */
 
+ function centroid(polygon) {
+    let xc = 0;
+    let yc = 0;
+    vertices = 0;
+    for (_i=0 ; _i < polygon.length ; _i+=2, vertices+=1) {
+        xc += polygon[_i];
+        yc += polygon[_i+1];        
+    };
+
+    return {x: xc / vertices, 
+            y: yc / vertices};
+ };
+
 LanguageModelGeocoder.prototype.geocode = function (input) {
   const endpoint = "http://0.0.0.0:5000/geocoding"
   const resource = new Cesium.Resource({
@@ -29,10 +42,10 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
     return results.map(function (resultObject) {
       
       viewer.entities.removeAll();
-       
-      confidance = Math.round(resultObject.confidance[0]*100);
+      confidences = resultObject.confidence.reverse()
+      confidence = Math.round(confidences[0]*100);
       bboxDegrees = resultObject.boundingbox;
-      text = `${resultObject.display_name.slice(0,64)} (${confidance}%)`;
+      text = `${resultObject.display_name.slice(0,64)} (${confidence}%)`;
       position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
       viewer.entities.add({position:position,        
                           label:{text:text, 
@@ -49,12 +62,13 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
       viewer.entities.add({polygon: polygon});      // viewer.entities.add({rectangle:rectangle});
 
       for (i = 1; i < resultObject.levels_polygons.length; i++) {
-        _confidance = Math.round(resultObject.confidance[i]*100);
-        _text = `${resultObject.display_name.slice(0,64)} (${_confidance}%)`;
+        _confidence = Math.round(confidences[i]*100);
+        _text = `level-${i} (${_confidence}%)`;
         _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
         _polygon = {hierarchy:_coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLACK, outlineWidth:2};
         viewer.entities.add({polygon:_polygon});
-        _position = Cesium.Cartesian3.fromDegrees(resultObject.levels_polygons[i][0], resultObject.levels_polygons[i][1]);
+        _centroid = centroid(resultObject.levels_polygons[i]);
+        _position = Cesium.Cartesian3.fromDegrees(_centroid.x, _centroid.y);
         viewer.entities.add({position:_position,        
                             label:{text:_text, 
                                    font:"24px Helvetica", 
