@@ -25,9 +25,25 @@ function LanguageModelGeocoder() {}
             y: yc / vertices};
  };
 
-LanguageModelGeocoder.prototype.geocode = function (input) {
+ function boundingbox(polygon) {
+  let min_x = 90;
+  let min_y = 180;
+  let max_x = -90;
+  let max_y = -180;
+  vertices = 0;
+  for (_i=0 ; _i < polygon.length ; _i+=2, vertices+=1) {
+      min_x = Math.min(polygon[_i], min_x);
+      min_y = Math.min(polygon[_i+1], min_y);
+      max_x = Math.max(polygon[_i],max_x)
+      max_y = Math.max(polygon[_i+1],max_y)
+  };
+
+  return Array(min_y, max_y,min_x, max_x);
+};
+
+ LanguageModelGeocoder.prototype.geocode = function (input) {
   const endpoint = "http://0.0.0.0:5000/geocoding"
-  const confidence_threshold = 20.0; 
+  const confidence_threshold = 0.0; 
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
@@ -44,23 +60,6 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
       
       viewer.entities.removeAll();
       confidences = resultObject.confidence.reverse()
-      // confidence = Math.round(confidences[0]*100);
-      bboxDegrees = resultObject.boundingboxes[0];
-      // text = `${resultObject.display_name.slice(0,64)} (${confidence}%)`;
-      // position = Cesium.Cartesian3.fromDegrees((bboxDegrees[2]+bboxDegrees[3])/2.0, (bboxDegrees[0]+bboxDegrees[1])/2.0);
-      // viewer.entities.add({position:position,        
-      //                     label:{text:text, 
-      //                            font:"24px Helvetica", 
-      //                            fillColor: Cesium.Color.SKYBLUE, 
-      //                            outlineColor: Cesium.Color.BLACK, 
-      //                            outlineWidth: 2,
-      //                            style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
-      // });    
-
-
-      // coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[0]);
-      // polygon = {hierarchy:coordinates, fill:false, outline:true, outlineColor:Cesium.Color.BLUE, outlineWidth:3};
-      // viewer.entities.add({polygon: polygon});      // viewer.entities.add({rectangle:rectangle});
 
       for (i = 0; i < resultObject.levels_polygons.length; i++) {
         _confidence = Math.round(confidences[i]*100);        
@@ -79,12 +78,12 @@ LanguageModelGeocoder.prototype.geocode = function (input) {
                                    outlineWidth: 2,
                                    style: Cesium.LabelStyle.FILL_AND_OUTLINE,}
                                });
+                               bboxDegrees = boundingbox(resultObject.levels_polygons[i]) 
                                break;
         }
   
       };
 
-      bboxDegrees = resultObject.boundingboxes[i];
       buffer = 0.2 * Math.abs(bboxDegrees[2]-bboxDegrees[3]);
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
         bboxDegrees[2]-buffer, 
