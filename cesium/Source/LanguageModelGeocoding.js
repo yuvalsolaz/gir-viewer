@@ -41,8 +41,8 @@ function LanguageModelGeocoder() {}
   return Array(min_y, max_y,min_x, max_x);
 };
 
- LanguageModelGeocoder.prototype.geocode = function (input) {
-  const endpoint = "http://0.0.0.0:5000/geocoding"
+ LanguageModelGeocoder.prototype.geocode = function (input) {  
+  const endpoint = "http://0.0.0.0:5000/geocoding"  // "/geoknn"
   const confidence_threshold = 20.0; 
   const resource = new Cesium.Resource({
     url: endpoint,
