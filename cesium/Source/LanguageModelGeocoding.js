@@ -51,7 +51,7 @@ function LanguageModelGeocoder() {}
     queryParameters: {
       format: "json",
       text: input,
-      k: 10
+      k: 5
     },
   });
 
@@ -61,16 +61,15 @@ function LanguageModelGeocoder() {}
     return results.map(function (resultObject) {
       
       viewer.entities.removeAll();
-      confidences = resultObject.confidence.reverse()
       label_text = resultObject.display_name.slice(0,64)
       for (i = 0; i < resultObject.levels_polygons.length; i++) {
         _confidence = (resultObject.confidence[i]).toFixed(3);        
         if (_confidence >= confidence_threshold) {            
-            _text = `${resultObject.levels_polygons.length-i} (${_confidence})`; // `${label_text} ${i} (${_confidence}%)`;
+            _text = `${i+1} (${_confidence})`; // `${label_text} ${i} (${_confidence}%)`;
             _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
               _polygon = {
                   hierarchy:_coordinates, 
-                  // extrudedHeight: Math.exp(confidences[i]*10) * 200.0, // meters
+                  // extrudedHeight: Math.exp(_confidence[i]*10) * 200.0, // meters
                   fill:false, 
                   outline:true, 
                   outlineColor:Cesium.Color.BLUE, 
@@ -92,7 +91,8 @@ function LanguageModelGeocoder() {}
         }
   
       };
-
+      // return bounding box of top confidance
+      bboxDegrees = boundingbox(resultObject.levels_polygons[0]) 
       buffer = 0.2 * Math.abs(bboxDegrees[2]-bboxDegrees[3]);
       buffer_coordinates = Cesium.Rectangle.fromDegrees(
         bboxDegrees[2]-buffer, 
