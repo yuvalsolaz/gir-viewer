@@ -42,14 +42,16 @@ function LanguageModelGeocoder() {}
 };
 
  LanguageModelGeocoder.prototype.geocode = function (input) {  
-  const endpoint = "http://L-P-VITALYSH-LW:5000/geocoding"  // "/viisual aid geocoding"
+  const endpoint = "http://10.53.122.161:5008/geocoding";  // "/visual aid geocoding"
+  // const endpoint = "http://l-p-yuvalso-ww-lnx:5000/geocoding";  // "/visual aid geocoding"
   const confidence_threshold = 0.2; 
-  const prompt = 'orthophoto of a';
+  
   const resource = new Cesium.Resource({
     url: endpoint,
     queryParameters: {
       format: "json",
       text: input,
+      k: 10
     },
   });
 
@@ -64,7 +66,7 @@ function LanguageModelGeocoder() {}
       for (i = 0; i < resultObject.levels_polygons.length; i++) {
         _confidence = (resultObject.confidence[i]).toFixed(3);        
         if (_confidence >= confidence_threshold) {            
-            _text = `${i} (${_confidence})`; // `${label_text} ${i} (${_confidence}%)`;
+            _text = `${resultObject.levels_polygons.length-i} (${_confidence})`; // `${label_text} ${i} (${_confidence}%)`;
             _coordinates = Cesium.Cartesian3.fromDegreesArray(resultObject.levels_polygons[i]);
               _polygon = {
                   hierarchy:_coordinates, 
