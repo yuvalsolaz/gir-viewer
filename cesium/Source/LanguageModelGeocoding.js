@@ -42,7 +42,7 @@ function LanguageModelGeocoder() {}
 };
 
  LanguageModelGeocoder.prototype.geocode = function (input) {  
-  const endpoint = "http://10.53.122.161:5008/geocoding";  // "/visual aid geocoding"
+  const endpoint = "http://10.53.112.74:5008/geocoding";  // "/visual aid geocoding"
   // const endpoint = "http://l-p-yuvalso-ww-lnx:5000/geocoding";  // "/visual aid geocoding"
   const confidence_threshold = 0.2; 
   
